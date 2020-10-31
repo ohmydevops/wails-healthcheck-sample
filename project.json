@@ -1,0 +1,25 @@
+{
+ "name": "healthcheck-sample",
+ "description": "Simple healthcheck application with wails framework",
+ "author": {
+  "name": "Amir Hossein Baghaie",
+  "email": "amirbagh75@gmail.com"
+ },
+ "version": "0.1.0",
+ "binaryname": "healthcheck-sample",
+ "frontend": {
+  "dir": "frontend",
+  "install": "npm install",
+  "build": "npm run build",
+  "bridge": "src",
+  "serve": "npm run serve"
+ },
+ "tags": "",
+ "WailsVersion": "1.9.0",
+ "CrossCompile": false,
+ "Platform": "",
+ "Architecture": "",
+ "LdFlags": "",
+ "GoPath": "",
+ "UseFirebug": false
+}
