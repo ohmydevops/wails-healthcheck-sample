@@ -1,11 +1,14 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
 	"sync"
 	"time"
+
+	"github.com/go-ping/ping"
 
 	"github.com/pkg/browser"
 
@@ -116,6 +119,32 @@ func openURL(URL string) error {
 	return nil
 }
 
+type sampleLiveLog struct {
+}
+
+func (m *sampleLiveLog) WailsInit(r *wails.Runtime) error {
+	go func() {
+		for {
+			pinger, err := ping.NewPinger("8.8.8.8")
+			if err != nil {
+				log.Println(err)
+			}
+			output := ""
+			pinger.Count = 1
+			pinger.OnRecv = func(pkt *ping.Packet) {
+				output = fmt.Sprintf("%d bytes from %s: icmp_seq=%d time=%v\n",
+					pkt.Nbytes, pkt.IPAddr, pkt.Seq, pkt.Rtt)
+			}
+			pinger.OnFinish = func(stats *ping.Statistics) {
+				r.Events.Emit("initialised", output)
+				time.Sleep(1 * time.Second)
+			}
+			pinger.Run()
+		}
+	}()
+	return nil
+}
+
 func main() {
 
 	websiteHealthList = append(websiteHealthList, google)
@@ -125,6 +154,7 @@ func main() {
 	websiteHealthList = append(websiteHealthList, wailsDoc)
 	websiteHealthList = append(websiteHealthList, sampleError)
 	websiteHealthList = append(websiteHealthList, sampleNotFound)
+	liveLogs := &sampleLiveLog{}
 
 	js := mewn.String("./frontend/dist/app.js")
 	css := mewn.String("./frontend/dist/app.css")
@@ -139,5 +169,6 @@ func main() {
 	})
 	app.Bind(updateListHealthCheck)
 	app.Bind(openURL)
+	app.Bind(liveLogs)
 	app.Run()
 }
