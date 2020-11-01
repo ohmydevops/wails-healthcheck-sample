@@ -7,6 +7,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/pkg/browser"
+
 	"github.com/leaanthony/mewn"
 	"github.com/wailsapp/wails"
 )
@@ -106,6 +108,14 @@ func updateListHealthCheck() []*websiteHealth {
 	return websiteHealthList
 }
 
+func openURL(URL string) error {
+	err := browser.OpenURL(URL)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func main() {
 
 	websiteHealthList = append(websiteHealthList, google)
@@ -121,12 +131,13 @@ func main() {
 
 	app := wails.CreateApp(&wails.AppConfig{
 		Width:  800,
-		Height: 500,
+		Height: 800,
 		Title:  "Sample Wails Healtcheck App",
 		JS:     js,
 		CSS:    css,
 		Colour: "#131313",
 	})
 	app.Bind(updateListHealthCheck)
+	app.Bind(openURL)
 	app.Run()
 }

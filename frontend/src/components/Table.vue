@@ -1,12 +1,34 @@
 <template>
   <div>
-    <b-table
-      striped
-      hover
-      :items="websitesList"
-      :fields="fields"
-      :tbody-tr-class="statusColor"
-    ></b-table>
+    <vue-splash
+      :show="this.loading"
+      :style="{ zIndex: '999' }"
+      title="loading ..."
+      color="#00bfa5"
+      :size="300"
+      :fixed="true"
+    />
+
+    <div class="mt-5">
+      <b-table
+        striped
+        hover
+        dark
+        bordered
+        :items="websitesList"
+        :fields="fields"
+        :tbody-tr-class="statusColor"
+      ></b-table>
+    </div>
+
+    <p class="text-white">Next check at: {{ this.nextCheckAt }} sec</p>
+    <a
+      v-on:click="
+        openURL('https://github.com/amirbagh75/wails-healthcheck-sample')
+      "
+      href="#"
+      >Github repo</a
+    >
   </div>
 </template>
 
@@ -15,6 +37,10 @@ export default {
   data() {
     return {
       websitesList: [],
+      checkInterval: 5,
+      nextCheckAt: 5, // bad pattern! shame
+      interval: null,
+      loading: true,
       fields: [
         {
           key: "ID",
@@ -42,19 +68,34 @@ export default {
   mounted() {
     this.startLoading();
   },
+  watch: {
+    loading: function(newValue) {
+      if (!newValue) this.updateTimer();
+    },
+  },
   methods: {
     startLoading() {
-      this.updateList();
+      this.initList();
       this.updateHealthCheck();
     },
     updateHealthCheck() {
-      setInterval(() => {
-        this.updateList();
-      }, 3000);
+      this.interval = setInterval(() => {
+        this.initList();
+      }, this.checkInterval * 1000);
     },
-    updateList() {
+    updateTimer() {
+      setInterval(() => {
+        if (this.nextCheckAt > 1) {
+          this.nextCheckAt--;
+        } else {
+          this.nextCheckAt = this.checkInterval;
+        }
+      }, 1000);
+    },
+    initList() {
       window.backend.updateListHealthCheck().then((list) => {
         this.websitesList = list;
+        this.loading = false;
       });
     },
     statusColor(item, type) {
@@ -63,6 +104,11 @@ export default {
       if (item.Status.startsWith("5")) return "table-danger";
       if (item.Status.startsWith("4")) return "table-warning";
       return "table-info";
+    },
+    openURL(url) {
+      window.backend.openURL(url).then((r) => {
+        console.log(r);
+      });
     },
   },
 };

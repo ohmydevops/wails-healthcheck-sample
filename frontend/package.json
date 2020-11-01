@@ -12,7 +12,8 @@
     "bootstrap-vue": "^2.18.1",
     "core-js": "^3.6.4",
     "regenerator-runtime": "^0.13.3",
-    "vue": "^2.6.11"
+    "vue": "^2.6.11",
+    "vue-splash": "^1.2.1"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^4.2.3",
