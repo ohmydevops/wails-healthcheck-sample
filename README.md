@@ -19,6 +19,7 @@ We needed a desktop application for our new product at [Hipro.fit](https://hipro
 
 - [x] Init project!
 - [x] How to make connection between Go/Vue (Bind + Events)
+- [ ] Embedded database
 - [ ] How to make Auth in app with Go/Vue
 - [ ] How to print a page with printer (hardware)
 - [ ] How to print a page to PDF
